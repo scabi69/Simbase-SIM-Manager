@@ -14,4 +14,8 @@ Yo lo utilizo en un modo algo más restrictivo, utilizando un token de lectura q
 | Token de lectura | Token de escritura |
 | :----: | :----: |
 | ![Configuración para el token de lectura](https://github.com/scabi69/Simbase-SIM-Manager/blob/master/Token%20de%20lectura.png) | ![Configuración para el token de escritura](https://github.com/scabi69/Simbase-SIM-Manager/blob/master/Token%20de%20escritura.png) |
-| :----: | :----: |
+
+Utilizando los token obtenidos en el dashboard de Simbase, se pegan en los campos adecuados de la aplicación y ya permite activar y desactivar las SIM.
+
+Nota: Solamente tengo una SIM para gestionar en Simbase, por lo que no se como le responderá la aplicación a quien tenga más.
+
