@@ -34,7 +34,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.xabi.simbase.SimViewModel
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.xabi.simbase.ui.SimRow
+
+import com.xabi.simbase.ui.components.SimDetailDialog
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +55,14 @@ fun SimbaseApp(
         }
     }
 
+    val selectedSim by viewModel.selectedSim.collectAsState()
 
+    if (selectedSim != null) {
+        SimDetailDialog(
+            sim = selectedSim!!,
+            onDismiss = { viewModel.clearSelectedSim() }
+        )
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -90,7 +99,9 @@ fun SimbaseApp(
                     items(sims) { sim ->
                         SimRow(
                             sim = sim,
-                            onToggle = { viewModel.toggleSim(sim) }
+                            onToggle = { viewModel.toggleSim(sim) },
+                            onSimClick = { viewModel.selectSim(sim) }
+
                         )
                     }
                 }

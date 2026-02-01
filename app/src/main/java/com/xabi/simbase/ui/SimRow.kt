@@ -1,5 +1,6 @@
 package com.xabi.simbase.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,7 +19,8 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Help
 
 @Composable
-fun SimRow(sim: SimCard, onToggle: () -> Unit) {
+fun SimRow(sim: SimCard, onToggle: () -> Unit,
+           onSimClick: () -> Unit) {
 
     // Color según estado
     val backgroundColor = when (sim.state?.lowercase()) {
@@ -38,7 +40,9 @@ fun SimRow(sim: SimCard, onToggle: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .clickable { onSimClick() }
+                .padding(8.dp),
+
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -69,7 +73,7 @@ fun SimRow(sim: SimCard, onToggle: () -> Unit) {
             }
 
             val isEnabled = sim.state?.lowercase() == "enabled"
-            val buttonText = if (isEnabled) "Desactivar" else "Activar"
+
 
             IconButton(
                 onClick = onToggle

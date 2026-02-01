@@ -126,4 +126,14 @@ class SimViewModel(
              onCleared()   // ← solo se ejecuta cuando DataStore ha terminado
          }
      }
+     private val _selectedSim = MutableStateFlow<SimCard?>(null)
+     val selectedSim = _selectedSim.asStateFlow()
+
+     fun selectSim(sim: SimCard) {
+         _selectedSim.value = sim
+     }
+
+     fun clearSelectedSim() {
+         _selectedSim.value = null
+     }
 }
