@@ -1,6 +1,6 @@
 # Simbase SIM Manager
 
-Este es mi primer proyecto para realizar una app en android. No lo he programado yo, lo ha hecho Copilot siguiendo mis instrucciones.
+Este es mi primer proyecto para realizar una app en android. No lo he programado yo, lo ha hecho Copilot y Gemini siguiendo mis instrucciones.
 
 ## Requisitos
 
