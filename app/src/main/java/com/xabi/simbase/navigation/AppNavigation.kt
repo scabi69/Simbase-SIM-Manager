@@ -1,20 +1,22 @@
 package com.xabi.simbase.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.xabi.simbase.ui.SettingsScreen
-import com.xabi.simbase.ui.SettingsViewModel
-import com.xabi.simbase.ui.SimbaseApp
-import com.xabi.simbase.data.TokenStore
-import androidx.compose.runtime.collectAsState
-import androidx.compose.material3.CircularProgressIndicator
 import com.xabi.simbase.SimViewModel
-import com.xabi.simbase.SimViewModelFactory
-import androidx.lifecycle.viewmodel.compose.viewModel
-
+import com.xabi.simbase.data.TokenStore
+import com.xabi.simbase.ui.SettingsScreen
+import com.xabi.simbase.ui.SimbaseApp
 
 @Composable
 fun AppNavigation(viewModel: SimViewModel) {
@@ -24,17 +26,12 @@ fun AppNavigation(viewModel: SimViewModel) {
     NavHost(navController = navController, startDestination = "loading") {
 
         composable("loading") {
+            val tokens by TokenStore.readTokens(context).collectAsState(initial = null)
 
-            // Leer tokens desde DataStore
-            val tokens = TokenStore.readTokens(context).collectAsState(initial = null).value
-
-            if (tokens == null) {
-                CircularProgressIndicator()
-            } else {
-                val read = tokens.first
-                val write = tokens.second
-
-                println("TOKENS -> read='${read}', write='${write}'")
+            LaunchedEffect(tokens) {
+                val currentTokens = tokens ?: return@LaunchedEffect
+                val read = currentTokens.first
+                val write = currentTokens.second
 
                 if (read.isBlank() || write.isBlank()) {
                     navController.navigate("settings") {
@@ -45,6 +42,13 @@ fun AppNavigation(viewModel: SimViewModel) {
                         popUpTo("loading") { inclusive = true }
                     }
                 }
+            }
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
 

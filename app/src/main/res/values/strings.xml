@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SimbaseApp</string>
+    <string name="widget_name">SIM 1x1 (Simbase)</string>
+    <string name="widget_description">Interruptor de activación/desactivación para una SIM</string>
 </resources>

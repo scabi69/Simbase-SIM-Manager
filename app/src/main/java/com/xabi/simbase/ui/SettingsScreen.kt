@@ -1,15 +1,15 @@
 package com.xabi.simbase.ui
 
-
-import android.app.Activity
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.background
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.xabi.simbase.SimViewModel
 
 @Composable
@@ -17,8 +17,9 @@ fun SettingsScreen(
     viewModel: SimViewModel,
     onBack: () -> Unit
 ) {
-        val readToken by viewModel.readToken.collectAsState()
-        val writeToken by viewModel.writeToken.collectAsState()
+    val readToken by viewModel.readToken.collectAsState()
+    val writeToken by viewModel.writeToken.collectAsState()
+    val context = LocalContext.current
 
     Log.d("SETTINGS", "SettingsScreen recomposed")
 
@@ -27,118 +28,114 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
+        Text(
+            text = "Token de lectura",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleSmall
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        OutlinedTextField(
+            value = readToken,
+            onValueChange = { viewModel.updateReadToken(it) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Pega aquí tu API key de lectura") },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            text = "Token de escritura",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleSmall
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        OutlinedTextField(
+            value = writeToken,
+            onValueChange = { viewModel.updateWriteToken(it) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            placeholder = { Text("Pega aquí tu API key de escritura") },
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        if (readToken.isBlank() || writeToken.isBlank()) {
             Text(
-                text = "Token de lectura",
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium
+                text = "Debes introducir ambos tokens para continuar",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
+        }
 
-            OutlinedTextField(
-                value = readToken,
-                onValueChange = { viewModel.updateReadToken(it) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-
-
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    cursorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-
-
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = "Token de escritura",
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            OutlinedTextField(
-                value = writeToken,
-                onValueChange = { viewModel.updateWriteToken(it) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-
-
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    cursorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-
-
-            Spacer(Modifier.height(24.dp))
-
-            if (readToken.isBlank() || writeToken.isBlank()) {
-                Text(
-                    text = "Debes introducir ambos tokens para continuar",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-
-
-            Button(
-                onClick = {
+        Button(
+            onClick = {
                 Log.d("SETTINGS", "Guardando tokens desde SettingsScreen")
+                viewModel.saveTokens {
+                    onBack() // Solo vuelve cuando DataStore ha terminado de persistir
+                }
+            },
+            enabled = readToken.isNotBlank() && writeToken.isNotBlank(),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Guardar")
+        }
 
-                    viewModel.saveTokens()
-                    onBack()   // ← vuelve a "loading"
-                },
-                enabled = readToken.isNotBlank() && writeToken.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Guardar")
-            }
+        Spacer(Modifier.height(12.dp))
 
+        OutlinedButton(
+            onClick = {
+                if (readToken.isNotBlank() && writeToken.isNotBlank()) {
+                    onBack()
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Volver")
+        }
 
-            Spacer(Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    if (readToken.isNotBlank() && writeToken.isNotBlank()) {
-                        onBack()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Volver")
-            }
-
-        val activity = LocalContext.current as Activity
+        Spacer(Modifier.height(32.dp))
 
         Button(
             onClick = {
                 viewModel.clearTokens {
-                    activity.finishAffinity()   // ← cierre limpio
-
+                    context.findActivity()?.finishAffinity()
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp),
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.error
             )
         ) {
             Text("Borrar tokens y salir")
         }
-
-
-        }
     }
+}

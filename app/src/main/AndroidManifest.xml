@@ -21,6 +21,27 @@
 
         </activity>
 
+        <!-- Actividad de configuración del Widget 1x1 -->
+        <activity
+            android:name=".widget.SimWidgetConfigureActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Receptor del App Widget 1x1 -->
+        <receiver
+            android:name=".widget.SimWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.xabi.simbase.widget.ACTION_TOGGLE_SIM" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/sim_widget_info" />
+        </receiver>
 
     </application>
 

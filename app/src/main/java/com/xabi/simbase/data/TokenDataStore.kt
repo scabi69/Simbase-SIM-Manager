@@ -11,8 +11,8 @@ val Context.dataStore by preferencesDataStore("simbase_prefs")
 
 object TokenStore {
 
-    private val READ_TOKEN = stringPreferencesKey("read_token")
-    private val WRITE_TOKEN = stringPreferencesKey("write_token")
+    val READ_TOKEN = stringPreferencesKey("read_token")
+    val WRITE_TOKEN = stringPreferencesKey("write_token")
 
     fun readTokens(context: Context): Flow<Pair<String, String>> =
         context.dataStore.data.map { prefs ->

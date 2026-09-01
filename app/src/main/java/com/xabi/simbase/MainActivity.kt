@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current.applicationContext
 
             val viewModel: SimViewModel = viewModel(
-                factory = SimViewModelFactory(context.dataStore)
+                factory = SimViewModelFactory(context.dataStore, context)
             )
 
             AppNavigation(viewModel)

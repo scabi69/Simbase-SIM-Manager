@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background_neutral"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+    <!-- Nombre de la SIM -->
+    <TextView
+        android:id="@+id/widget_sim_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="SIM"
+        android:textColor="#212121"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:id="@+id/widget_toggle_container"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+        <!-- Botón / Icono de Interruptor -->
+        <ImageView
+            android:id="@+id/widget_btn_toggle"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:contentDescription="Cambiar estado"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_widget_toggle_off" />
+
+        <!-- Barra de progreso durante activación/desactivación -->
+        <ProgressBar
+            android:id="@+id/widget_progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <!-- Badge de estado -->
+    <TextView
+        android:id="@+id/widget_status_badge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget_badge_disabled"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingStart="6dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="2dp"
+        android:text="DESACT."
+        android:textColor="#C62828"
+        android:textSize="9sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

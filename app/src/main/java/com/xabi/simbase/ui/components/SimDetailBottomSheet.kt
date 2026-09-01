@@ -1,18 +1,16 @@
 package com.xabi.simbase.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.Composable
-import com.xabi.simbase.api.SimCard
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.*
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.xabi.simbase.api.SimCard
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimDetailDialog(
     sim: SimCard,
@@ -20,55 +18,109 @@ fun SimDetailDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false // ocupa casi toda la pantalla
-        ),
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            Button(onClick = onDismiss) {
                 Text("Cerrar")
             }
         },
         title = {
-            Text("Detalles de la SIM")
+            Text(
+                text = sim.name?.ifBlank { "Detalles de la SIM" } ?: "Detalles de la SIM",
+                style = MaterialTheme.typography.titleLarge
+            )
         },
         text = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 8.dp)
             ) {
-                // Aquí van TODOS los detalles sin scroll
-                Text("Nombre: ${sim.name ?: "-"}")
-                Text("Estado: ${sim.state ?: "-"}")
-                Text("ICCID: ${sim.iccid}")
-                Text("Tags: ${sim.tags?.joinToString(", ") ?: "-"}")
-                Text("Plan ID: ${sim.plan_id ?: "-"}")
-                Text("Cobertura: ${sim.coverage ?: "-"}")
-                Text("Perfil SIM: ${sim.sim_profile ?: "-"}")
-                Text("MSISDN: ${sim.msisdn ?: "-"}")
-                Text("Hardware: ${sim.hardware ?: "-"}")
-                Text("IMEI: ${sim.imei ?: "-"}")
-                Text("IMEI Lock: ${sim.imei_lock ?: "-"}")
-                Text("IP Pública: ${sim.public_ip ?: "-"}")
-                Text("IP Privada: ${sim.private_network_ip ?: "-"}")
+                DetailSectionTitle("Información General")
+                DetailRow("Estado", sim.state ?: "-")
+                DetailRow("ICCID", sim.iccid)
+                DetailRow("Plan ID", sim.plan_id ?: "-")
+                DetailRow("Cobertura", sim.coverage ?: "-")
+                DetailRow("Perfil SIM", sim.sim_profile ?: "-")
+                if (!sim.tags.isNullOrEmpty()) {
+                    DetailRow("Tags", sim.tags.joinToString(", "))
+                }
+                DetailRow("Autodisable", sim.autodisable ?: "-")
 
-                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                Text("Uso del mes:", style = MaterialTheme.typography.titleMedium)
-                Text("  Datos: ${sim.current_month_usage?.data ?: "-"}")
-                Text("  Voz: ${sim.current_month_usage?.voice ?: "-"}")
+                DetailSectionTitle("Red y Dispositivo")
+                DetailRow("MSISDN", sim.msisdn ?: "-")
+                DetailRow("Hardware", sim.hardware ?: "-")
+                DetailRow("IMEI", sim.imei ?: "-")
+                DetailRow("IMEI Lock", sim.imei_lock ?: "-")
+                DetailRow("IP Pública", sim.public_ip ?: "-")
+                DetailRow("IP Privada", sim.private_network_ip ?: "-")
 
-                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                Text("Costes del mes:", style = MaterialTheme.typography.titleMedium)
-                Text("  Total: ${sim.current_month_costs?.total ?: "-"}")
-                Text("  Datos: ${sim.current_month_costs?.data ?: "-"}")
-                Text("  Voz: ${sim.current_month_costs?.voice ?: "-"}")
+                DetailSectionTitle("Consumo del Mes")
+                val usage = sim.current_month_usage
+                DetailRow("Datos", formatDataUsage(usage?.data))
+                DetailRow("Voz", "${usage?.voice ?: 0} min")
+                DetailRow("SMS Salientes (MO)", "${usage?.sms_mo ?: 0}")
+                DetailRow("SMS Entrantes (MT)", "${usage?.sms_mt ?: 0}")
+                DetailRow("Sesiones totales", "${usage?.total_sessions ?: 0}")
 
-                Spacer(Modifier.height(12.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                Text("Autodisable: ${sim.autodisable ?: "-"}")
+                DetailSectionTitle("Costes del Mes")
+                val costs = sim.current_month_costs
+                DetailRow("Total", costs?.total ?: "-")
+                DetailRow("Datos", costs?.data ?: "-")
+                DetailRow("Voz", costs?.voice ?: "-")
+                DetailRow("SMS", costs?.sms ?: "-")
+                DetailRow("Línea", costs?.line_rental ?: "-")
             }
         }
     )
+}
+
+@Composable
+private fun DetailSectionTitle(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(bottom = 6.dp)
+    )
+}
+
+@Composable
+private fun DetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1.4f)
+        )
+    }
+}
+
+private fun formatDataUsage(bytes: Int?): String {
+    if (bytes == null || bytes == 0) return "0 MB"
+    val mb = bytes.toDouble() / (1024 * 1024)
+    return if (mb >= 1024) {
+        String.format("%.2f GB", mb / 1024)
+    } else {
+        String.format("%.2f MB", mb)
+    }
 }
